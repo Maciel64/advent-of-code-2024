@@ -86,13 +86,13 @@ func Challenge_1() {
 	sort.Ints(rightNumbers)
 
 	for index := range len(leftNumbers) {
-		diff += absolute(leftNumbers[index] - rightNumbers[index])
+		diff += Absolute(leftNumbers[index] - rightNumbers[index])
 	}
 
 	fmt.Println("Diferença total: ", diff)
 }
 
-func absolute(n int) int {
+func Absolute(n int) int {
 	if n < 0 {
 		return -n
 	}
