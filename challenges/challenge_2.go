@@ -105,3 +105,92 @@ func Challenge_2() {
 
 	fmt.Println("Totality of safe reports -> ", safeReports)
 }
+
+/*
+--- Part Two ---
+The engineers are surprised by the low number of safe reports until they realize they forgot to tell you about the Problem Dampener.
+
+The Problem Dampener is a reactor-mounted module that lets the reactor safety systems tolerate a single bad level in what would otherwise be a safe report. It's like the bad level never happened!
+
+Now, the same rules apply as before, except if removing a single level from an unsafe report would make it safe, the report instead counts as safe.
+
+More of the above example's reports are now safe:
+
+7 6 4 2 1: Safe without removing any level.
+1 2 7 8 9: Unsafe regardless of which level is removed.
+9 7 6 2 1: Unsafe regardless of which level is removed.
+1 3 2 4 5: Safe by removing the second level, 3.
+8 6 4 4 1: Safe by removing the third level, 4.
+1 3 6 7 9: Safe without removing any level.
+Thanks to the Problem Dampener, 4 reports are actually safe!
+
+Update your analysis by handling situations where the Problem Dampener can remove a single level from unsafe reports. How many reports are now safe?
+*/
+
+func Challenge_2_part_2() {
+	file, _ := os.Open("./inputs/input_2.txt")
+
+	defer file.Close()
+
+	content, _ := io.ReadAll(file)
+
+	safeReports := 0
+
+	for _, reports := range strings.Split(string(content), "\n") {
+		if reports == "" {
+			continue
+		}
+
+		values := []int{}
+		for _, char := range strings.Split(reports, " ") {
+			num, _ := strconv.Atoi(char)
+
+			values = append(values, num)
+		}
+
+		if isSafeReport(values) {
+			safeReports++
+		} else {
+			for i := 0; i < len(values); i++ {
+				tempValues := append([]int{}, values[:i]...)
+				tempValues = append(tempValues, values[i+1:]...)
+
+				if isSafeReport(tempValues) {
+					safeReports++
+					break
+				}
+			}
+		}
+	}
+
+	fmt.Println("Totality of safe reports ->", safeReports)
+}
+
+func isSafeReport(values []int) bool {
+	levelsDistance := 0
+	lastLevelDistance := 0
+
+	for i := 0; i < len(values)-1; i++ {
+		levelsDistance = values[i] - values[i+1]
+
+		if Absolute(levelsDistance) > 3 {
+			return false
+		}
+
+		if levelsDistance == 0 {
+			return false
+		}
+
+		if lastLevelDistance > 0 && levelsDistance < 0 {
+			return false
+		}
+
+		if levelsDistance > 0 && lastLevelDistance < 0 {
+			return false
+		}
+
+		lastLevelDistance = levelsDistance
+	}
+
+	return true
+}
